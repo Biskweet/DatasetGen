@@ -7,7 +7,7 @@ The project aims to generate image representations from JSON descriptions of a w
 "data": [
     {
         "name": "name",
-        "type": "type",  /* See the `Input types` section */
+        "type": "type",
         "coordinates": { "x": "x-pos", "y": "y-pos", "w": "width", "h": "height" },
         "content": "content"
     },
@@ -17,6 +17,7 @@ The project aims to generate image representations from JSON descriptions of a w
 ]
 ```
 Note: no element can overlap any other.
+Note 2 : See the [Input types](#input-types) section
 
 ## Output:
 Image (any common format).
