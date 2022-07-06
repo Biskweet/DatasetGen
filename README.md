@@ -4,10 +4,10 @@ The project aims to generate image representations from JSON descriptions of a w
 
 ## Input template:
 ```json
-data: [
+"data": [
     {
         "name": "name",
-        "type": "type",  // See the `Input types` section
+        "type": "type",  /* See the `Input types` section */
         "coordinates": { "x": "x-pos", "y": "y-pos", "w": "width", "h": "height" },
         "content": "content"
     },
