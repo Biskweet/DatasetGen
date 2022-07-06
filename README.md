@@ -6,13 +6,13 @@ The project aims to generate image representations from JSON descriptions of a w
 ```json
 data: [
     {
-        name: "name",
-        type: "type",  // See the `Input types` section
-        coordinates: { x: x-pos, y: y-pos, w: width, h: height },
-        content: "content"
+        "name": "name",
+        "type": "type",  // See the `Input types` section
+        "coordinates": { "x": "x-pos", "y": "y-pos", "w": "width", "h": "height" },
+        "content": "content"
     },
     {
-        ...
+        "etc": "..."
     }
 ]
 ```
