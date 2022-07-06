@@ -68,5 +68,3 @@ class Generator:
         html = Generator.generate_html(self.data)
         with open("tempfile.html", "w") as file: file.write(html)
         os.system(f"wkhtmltoimage --height 1080 --width 1920 --allow ./src/cross.svg tempfile.html {self.dest if dest is None else dest}")
-
-    
