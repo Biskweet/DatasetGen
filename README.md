@@ -1,4 +1,4 @@
-# HTML JSON description of a webpage to an image
+# JSON description of an HTML webpage and image generation
 
 The project aims to generate image representations from JSON descriptions of a webpages's input elements.
 
