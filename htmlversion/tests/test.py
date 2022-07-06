@@ -28,10 +28,12 @@ def generate_html(data):
 
         if elem_type.lower() == "image":
             document += f"transform:scale({width},{height});transform-origin:top left' src='./cross.svg'"
-        else:
+        elif elem_type not in ("radio", "checkbox"):
             document += f"width:{width}px;height:{height}px' "
+        else:
+            document += "'"
 
-        document += f"type='{elem_type}' name='{name}'"
+        document += f" type='{elem_type}' name='{name}'"
 
         # If 'value' exists add field
         document += f" value='{value}'" if value else ""
@@ -52,10 +54,10 @@ def generate_html(data):
 html = generate_html(
     [
         {
-            "content": "LETSOGGGG",
-            "value": "Weee",
-            "name": "bouton",
-            "type": "button",
+            "content": "content",
+            "value": "value",
+            "name": "name",
+            "type": "checkbox",
             "coordinates": {"x": 500, "y": 100, "width": 200, "height": 100}
         },
         # {
