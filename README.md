@@ -2,6 +2,12 @@
 
 The project aims to generate image representations from JSON descriptions of a webpages's input elements.
 
+## Requirements
+* The [WKHTMLtoPDF](https://wkhtmltopdf.org/) Linux package
+* Any compatible Linux distribution
+* A recent Python installation
+
+
 ## Input template:
 ```json
 "data": [
@@ -28,3 +34,4 @@ See a list of allowed input types in [Mozilla's docs](https://developer.mozilla.
 ## Method
 We will generate HTML files from the JSON data and then render the webpage to an image.
 This readme is subject to change.
+
