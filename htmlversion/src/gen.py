@@ -134,7 +134,8 @@ class Generator:
         html = Generator.generate_html(page if (page is not None) else self.data)
         with open(f"./htmls/{dest}.html", "w") as file: file.write(html)
         os.system("wkhtmltoimage --height 1080 --width 1920 --allow"
-                 f"./src/cross.svg ./htmls/{dest}.html ./images/{self.dest if dest is None else dest}.jpg")
+                 f"./src/cross.svg ./htmls/{self.dest if dest is None else dest}.html "
+                 f"./images/{self.dest if dest is None else dest}.jpg")
 
 
     def generate_multiple_images(self, dest=None):
