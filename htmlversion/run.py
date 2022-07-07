@@ -4,6 +4,10 @@ import os
 from src.gen import Generator
 
 if __name__ == "__main__":
+    for directory in ("./jsons/", "./htmls/", "./images/"):
+        if not os.path.isdir(directory):
+            os.mkdir(directory)
+
     if len(sys.argv) < 2 or sys.argv[1] not in ("generate-dataset", "generate-json", "single", "multiple", "clearall"):
         raise SystemExit("Please select a valid command.")
 
@@ -34,9 +38,5 @@ if __name__ == "__main__":
                 shutil.rmtree("./images/")
             except Exception: ...
 
-            os.mkdir("./jsons/")
-            os.mkdir("./htmls/")
-            os.mkdir("./images/")
- 
         else:
             print("Please provide arguments.")

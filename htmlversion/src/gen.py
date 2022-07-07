@@ -127,7 +127,7 @@ class Generator:
                 })
 
             with open(f"./jsons/{str(i).zfill(len(str(amount)))}.json", "w") as file:
-                json.dump(elements, file, indent=2)
+                json.dump(elements, file)
 
 
     def generate_image(self, page=None, dest=None):
