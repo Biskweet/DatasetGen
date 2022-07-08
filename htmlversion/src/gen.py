@@ -1,29 +1,31 @@
+from email.errors import InvalidMultipartContentTransferEncodingDefect
 import json
 import random
 import os
 
 
 class Generator:
-    types = [
+    inputtypes = [
         "button", "checkbox", "image", "file", "password",
         "radio", "text", "color", "date", "range"
     ]
 
     def __init__(self, args):
         if len(args) not in (3, 4) and args[1] != "multiple":
-            print("Too many or no input file provided. Please provide one JSON"
-                  "date file for the generation (and optionally one destination file).")
+            print("Too many or no input file provided. Please provide one JSON "
+                  "data file for the generation (and optionally one destination file).")
             raise SystemExit("Aborting")
 
         # Single file generation
         if (args[1] == "single"):
             try:
                 with open(args[2], "r") as file:
+                    print("opening", os.getcwd() + "/" + args[2])
                     content = file.read()
-                    self.data = json.loads(content)["data"]
-            except Exception:
-                print(f"File {args[1]} was not found, has wrong data format or"
-                       "is corrupted. Please check your input file. Aborting.")
+                    self.data = json.loads(content)
+            except Exception as e:
+                print(f"File {args[2]} was not found, has wrong data format or"
+                       " is corrupted. Please check your input file.", e)
                 raise SystemExit("Aborting")
 
         # Multiple file generation
@@ -36,7 +38,7 @@ class Generator:
                         self.data.append(json.loads(content))
             except Exception:
                 print(f"File {file} was not found, has wrong data format or is"
-                       "corrupted. Please check your input file.")
+                       " corrupted. Please check your input file.")
                 raise SystemExit("Aborting")
 
         # Setting img file destination with custom/default
@@ -47,6 +49,8 @@ class Generator:
     @staticmethod
     def generate_html(data, filename=None):
         """Generate the HTML/CSS for JSON-like data"""
+        data = data["data"]
+
         document = "<!DOCTYPE html><head></head><body>"
 
         for i, element in enumerate(data):
@@ -74,9 +78,9 @@ class Generator:
                         f"top:{coord[1]}px'><input id='{chr(65 + i)}' style='"
 
             if elem_type.lower() == "image":
-                document += f"transform:scale({width},{height});transform-origin:top left' src='./src/cross.svg'"
+                document += f"transform:scale({width},{height});transform-origin:top left' src='{os.getcwd()}/./src/cross.svg'"
             elif elem_type not in ("radio", "checkbox"):
-                document += f"width:{width}px;height:{height}px' "
+                document += f"width:{width}px;height:{height}px'"
             else:
                 document += "'"
 
@@ -100,8 +104,8 @@ class Generator:
 
     @staticmethod
     def generate_json(amount, lower_elem_bound=1, upper_elem_bound=10, xmax=1920, ymax=1080, dimmin=10, dimmax=400):
-        for i in range(1, amount + 1):
-            print(f"Generated {i}/{amount} files.")
+        for i in range(amount):
+            print(f"Generated {i+1}/{amount} JSON files.", end="\r")
             elements = {"data": []}
             nbelem = random.randint(1, 10)
 
@@ -119,7 +123,7 @@ class Generator:
                     posy = random.randint(0, ymax)
 
                 elements["data"].append({
-                    "type": random.choice(Generator.types),
+                    "type": random.choice(Generator.inputtypes),
                     "value": "value",
                     "name": "name",
                     "content": "content",
@@ -129,22 +133,43 @@ class Generator:
             with open(f"./jsons/{str(i).zfill(len(str(amount)))}.json", "w") as file:
                 json.dump(elements, file)
 
+        print()
+
+    @staticmethod
+    def generate_dataset(size):
+        Generator.generate_json(size)
+
+        app = Generator([None, "multiple"] + list(map(lambda filename: "./jsons/" + filename, os.listdir("./jsons/."))))
+        app.generate_multiple_images()
+
 
     def generate_image(self, page=None, dest=None):
+        filename = self.dest if dest is None else dest
         html = Generator.generate_html(page if (page is not None) else self.data)
-        with open(f"./htmls/{dest}.html", "w") as file: file.write(html)
-        os.system("wkhtmltoimage --height 1080 --width 1920 --allow"
-                 f"./src/cross.svg ./htmls/{self.dest if dest is None else dest}.html "
-                 f"./images/{self.dest if dest is None else dest}.jpg")
+        with open(f"./htmls/{filename}.html", "w") as file: file.write(html)
+        os.system("wkhtmltoimage --height 1080 --width 1920 --allow "
+                 f"./src/cross.svg ./htmls/{filename}.html "
+                 f"./images/{filename}.jpg")
 
 
-    def generate_multiple_images(self, dest=None):
+    def generate_multiple_images(self):
         """
         Calls the `generate_image` func on each element of the data list.
         Does not allow to set a destination file.
         """
         for i, page in enumerate(self.data):
-            self.generate_image(page=page, dest=i)
+            filename = str(i).zfill(len(str(len(self.data))))
+            html = Generator.generate_html(page)
+            with open(f"./htmls/{filename}.html", "w") as file: file.write(html)
+            error = os.system("wkhtmltoimage --enable-local-file-access --height 1080"
+                             f" --width 1920 --quiet --load-error-handling skip --allow ./src/cross.svg"
+                             f" ./htmls/{filename}.html ./images/{filename}.jpg")
+            if error:
+                print(f"Error for file ./htmls/{filename}.html => ./images/{filename}.jpg ({error})\n")
+            else:
+                print(f"\rRendered {i+1}/{len(self.data)} images.", end="")
+
+        print()
 
 
 def has_collision(obj, elem_list):

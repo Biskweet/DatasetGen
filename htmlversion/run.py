@@ -4,6 +4,7 @@ import os
 from src.gen import Generator
 
 if __name__ == "__main__":
+    # Creating necessary folders
     for directory in ("./jsons/", "./htmls/", "./images/"):
         if not os.path.isdir(directory):
             os.mkdir(directory)
