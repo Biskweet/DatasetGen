@@ -161,8 +161,8 @@ class Generator:
             filename = str(i).zfill(len(str(len(self.data))))
             html = Generator.generate_html(page)
             with open(f"./htmls/{filename}.html", "w") as file: file.write(html)
-            error = os.system("wkhtmltoimage --enable-local-file-access --height 1080"
-                             f" --width 1920 --quiet --load-error-handling skip --allow ./src/cross.svg"
+            error = os.system("wkhtmltoimage --enable-local-file-access"
+                             f" --quiet --load-error-handling skip --allow ./src/cross.svg"
                              f" ./htmls/{filename}.html ./images/{filename}.jpg")
             if error:
                 print(f"Error for file ./htmls/{filename}.html => ./images/{filename}.jpg ({error})\n")
