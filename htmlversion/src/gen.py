@@ -1,4 +1,3 @@
-from email.errors import InvalidMultipartContentTransferEncodingDefect
 import json
 import random
 import os
