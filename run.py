@@ -5,7 +5,7 @@ from src.gen import Generator
 
 if __name__ == "__main__":
     # Creating necessary folders
-    for directory in ("./jsons/", "./htmls/", "./images/"):
+    for directory in ("./jsons/", "./htmls/", "./images/", "./labels/"):
         if not os.path.isdir(directory):
             os.mkdir(directory)
 
@@ -37,6 +37,8 @@ if __name__ == "__main__":
                 shutil.rmtree("./jsons/")
                 shutil.rmtree("./htmls/")
                 shutil.rmtree("./images/")
+                shutil.rmtree("./labels/")
+                shutil.rmtree("./src/__pycache__/")
             except Exception: ...
 
         else:

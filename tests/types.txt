@@ -1,0 +1,76 @@
+@staticmethod
+    def generate_html(data):
+        """Generate the HTML/CSS for JSON-like data"""
+
+        data = data["data"]
+
+        document = "<!DOCTYPE html><head></head><body>"
+
+        for i, element in enumerate(data):
+            elem_type = element.get("type")
+            content = element.get("content")
+            name = element.get("name")
+            value = element.get("value")
+
+            # Coordinates and size are required arguments. If they do not
+            # exist, the program will crash.
+            try:
+                coord = element["coordinates"]["x"], element["coordinates"]["y"]
+            except KeyError:
+                print("No coordinates found in file")
+                raise SystemExit("Aborting.")
+
+            height, width = (
+                element["coordinates"]["height"],  # x
+                element["coordinates"]["width"]    # y
+            )
+
+
+            # We start filling the document from there
+            document += f"<div style='position:absolute;left:{coord[0]}px; \
+                          top:{coord[1]}px'><input id='{chr(65 + i)}' style='"
+
+            if elem_type.lower() == "image":
+                document += f"transform:scale({width},{height});\
+                              transform-origin:top left' \
+                              src='{os.getcwd()}/src/cross.svg'"
+            elif elem_type not in ("radio", "checkbox"):
+                document += f"width:{width}px;height:{height}px'"
+            else:
+                document += "'"
+
+            document += f" type='{elem_type}' name='{name}'"
+
+            # If 'value' exists add field
+            document += f" value='{value}'" if value else ""
+
+            # If 'content' exists add field
+            document += f" content='{content}'" if content else ""
+
+            if elem_type.lower() in ("radio", "checkbox"):
+                document += f"><label for='{chr(65 + i)}' \
+                              style='font-family:sans-serif'>{content}</label"
+
+            document += "></div>"
+
+        document += "</body></html>"
+
+        return document
+
+
+    input_types = [
+        # "button",       # 0
+            # "carousel",     # 1
+        # "checkbox",     # 2
+        # "header",       # 3
+        # "image",        # 4
+        # "label",        # 5
+        # "link",         # 6
+            # "pagination",   # 7
+        # "paragraph",    # 8
+        # "radio",        # 9
+        # "select",       # 10
+            # "table",        # 11
+        # "textarea",     # 12
+        # "textbox"       # 13
+    ]

@@ -1,14 +1,30 @@
 import json
-import random
-# import threading
 import os
+from time import time
+import psutil
+import random
+import subprocess
+import threading
+import numpy as np
+from PIL import Image
 
 
 class Generator:
-    inputtypes = [
-        "button", "carousel", "checkbox", "header", "image",
-        "label", "link", "pagination", "paragraph", "radio",
-        "select", "table", "textarea", "textbox" 
+    input_types = [  #  number    index
+        "button",       # 0         0  
+        # "carousel",     # 1   
+        "checkbox",     # 2         1
+        "header",       # 3         2
+        "image",        # 4         3
+        "label",        # 5         4
+        "link",         # 6         5
+        # "pagination",   # 7
+        "paragraph",    # 8         6
+        "radio",        # 9         7
+        "select",       # 10        8
+        # "table",        # 11
+        "textarea",     # 12        9
+        "textbox"       # 13        10
     ]
 
     def __init__(self, args):
@@ -21,7 +37,6 @@ class Generator:
         if (args[1] == "single"):
             try:
                 with open(args[2], "r") as file:
-                    print("opening", os.getcwd() + "/" + args[2])
                     content = file.read()
                     self.data = json.loads(content)
             except Exception as e:
@@ -39,7 +54,7 @@ class Generator:
                         self.data.append(json.loads(content))
             except Exception:
                 print("File was not found, has wrong data format or is \
-                       corrupted. Please check your input file.")
+                       corrupted. Please check your input files.")
                 raise SystemExit("Aborting.")
 
         # Setting img file destination with custom/default
@@ -48,63 +63,85 @@ class Generator:
 
 
     @staticmethod
-    def generate_html(data, filename=None):
-        """Generate the HTML/CSS for JSON-like data"""
+    def generate_html_2(data):
+        data = data.get("data")
 
-        data = data["data"]
+        if data is None:
+            print("Incorrect input")
+            raise SystemExit("Aborting.")
 
-        document = "<!DOCTYPE html><head></head><body>"
+        # Verifying presence of `wkhtmltoimage`
+        with open(os.devnull, "wb") as devnull:
+            try:
+                subprocess.check_call(["wkhtmltoimage", "-V"], stdout=devnull, stderr=subprocess.STDOUT)
+            except Exception:
+                print("Package wkhtmltoimage is not installed!")
+                raise SystemExit("Aborting.")
 
-        for i, element in enumerate(data):
+        # Beginning webpage
+        document = "<!DOCTYPE html><head></head><body style='body{font-family:monospace;padding:0;margin:0;border:0}'>"
+
+        for element in data:
             elem_type = element.get("type")
-            content = element.get("content")
-            name = element.get("name")
-            value = element.get("value")
+            # content = element.get("content")
+            # name = element.get(   "name")
+            # value = element.get("value")
 
             # Coordinates and size are required arguments. If they do not
             # exist, the program will crash.
             try:
                 coord = element["coordinates"]["x"], element["coordinates"]["y"]
             except KeyError:
-                print(f"No coordinates found in file {filename if filename else ''}")
+                print("No coordinates found in file")
                 raise SystemExit("Aborting.")
 
             height, width = (
-                element["coordinates"]["height"],  # x
-                element["coordinates"]["width"]    # y
+                element["coordinates"]["height"],  # x-pos
+                element["coordinates"]["width"]    # y-pos
             )
 
-
             # We start filling the document from there
-            document += f"<div style='position:absolute;left:{coord[0]}px;top:{coord[1]}px'><input id='{chr(65 + i)}' style='"
+            document += f"<div style='position:absolute;left:{coord[0]}px;top:{coord[1]}px'>"
 
-            if elem_type.lower() == "image":
-                document += f"transform:scale({width},{height});transform-origin:top left' src='{os.getcwd()}/./src/cross.svg'"
-            elif elem_type not in ("radio", "checkbox"):
-                document += f"width:{width}px;height:{height}px'"
-            else:
-                document += "'"
+            if elem_type in ("checkbox", "radio"):
+                document += f"<input type='{elem_type}' style='width:{width};height:{height}'>"
 
-            document += f" type='{elem_type}' name='{name}'"
+            elif elem_type == "button":
+                document += f"<input type='button' style='width:{width}px;height:{height}px' value='Button'>"
 
-            # If 'value' exists add field
-            document += f" value='{value}'" if value else ""
+            elif elem_type == "textbox":
+                document += f"<input type='textbox' style='width:{width-3}px;height:{height-3}px'>"
 
-            # If 'content' exists add field
-            document += f" content='{content}'" if content else ""
+            elif elem_type == "image":
+                document += f"<img src='{os.getcwd()}/src/cross.svg'style='transform-origin:top left;transform:scale({width}, {height-13})'>"
 
-            if elem_type.lower() in ("radio", "checkbox"):
-                document += f"><label for='{chr(65 + i)}' style='font-family:sans-serif'>{content}</label"
+            elif elem_type == "label":
+                document += f"<label style='font-size:{min(height, 0)}px'>Label</label>"
 
-            document += "></div>"
+            elif elem_type == "link":
+                document += f"<a href='http://127.0.0.1/' style='font-size:{min(height, 20)}px'>Link</a>"
 
-        document += "</body></html>"
+            elif elem_type == "header":
+                document += f"<h1 style='font-family:monospace'>Header</h1>"
+
+            elif elem_type == "paragraph":
+                document += f"<p style='width:{width}px;height:{height}px'>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>"
+
+            elif elem_type == "textarea":
+                document += f"<textarea style='width:{width-5}px;height:{height-5}px;overflow:scroll'></textarea>"
+
+            elif elem_type == "select":
+                document += f"<select style='width:{width}px;height:{height}px'><option>Select</option></select>"
+
+            document += "</div>"
+
+        document += "</html>"
 
         return document
 
 
     @staticmethod
-    def generate_json(amount, lower_elem_bound=1, upper_elem_bound=10, xmax=1920, ymax=1080, dimmin=10, dimmax=400):
+    def generate_json(amount, lower_elem_bound=1, upper_elem_bound=10, xmax=500, ymax=500, dimmin=10, dimmax=200):
         for i in range(amount):
             print(f"Generated {i+1}/{amount} JSON files.", end="\r")
             elements = {"data": []}
@@ -112,19 +149,17 @@ class Generator:
 
             for _ in range(nbelem):
                 # Generating valid, non-overlapping dimensions for each element
-                width = random.randint(dimmin, dimmax)
-                height = random.randint(dimmin, dimmax)
-                posx = random.randint(0, xmax)
-                posy = random.randint(0, ymax)
+                elem_type = random.choice(Generator.input_types)
+                
+                # Generating base random data
+                width, height, posx, posy = generate_random(elem_type, dimmin, dimmax, xmax, ymax)
 
-                while has_collision(((posx, posy), (posx + width, posy + height)), elements["data"]):
-                    width = random.randint(dimmin, dimmax)
-                    height = random.randint(dimmin, dimmax)
-                    posx = random.randint(0, xmax)
-                    posy = random.randint(0, ymax)
+                while has_collision(posx, posy, width, height, elements["data"]):
+                    width, height, posx, posy = generate_random(elem_type, dimmin, dimmax, xmax, ymax)
+
 
                 elements["data"].append({
-                    "type": random.choice(Generator.inputtypes),
+                    "type": elem_type,
                     "value": "value",
                     "name": "name",
                     "content": "content",
@@ -137,49 +172,134 @@ class Generator:
         print()
 
 
+    def generate_labels(self):
+        for i, page in enumerate(self.data):
+            page_data = page["data"]
+            filename = str(i).zfill(len(str(len(self.data))))
+
+            with open(f"./labels/{filename}.txt", "w") as file:
+                img = Image.open(f"./images/{filename}.jpg")
+
+                for elem in page_data:
+                    category_id = Generator.input_types.index(elem["type"])
+                    xpos = elem["coordinates"]["x"] / img.width
+                    ypos = elem["coordinates"]["y"] / img.height
+                    width = elem["coordinates"]["width"] / img.width
+                    height = elem["coordinates"]["height"] / img.height
+
+                    file.write(f"{category_id} {xpos} {ypos} {width} {height}\n")
+
+
     @staticmethod
     def generate_dataset(size):
         Generator.generate_json(size)
 
         args = [None, "multiple"]
-        args += list(map(lambda filename: "./jsons/" + filename, os.listdir("./jsons/.")))
+        args += list(map(lambda filename: "./jsons/" + filename, sorted(os.listdir("./jsons/."))))
         app = Generator(args)
-        app.generate_multiple_images()
+        done = [False]
+        app.generate_multiple_images(done)
+        while not done[0]:
+            time.sleep(0.5)
+
+        app.generate_labels()
 
 
     def generate_image(self, page=None, dest=None):
-        filename = self.dest if dest is None else dest
-        html = Generator.generate_html(page if (page is not None) else self.data)
+        filename = dest or self.dest
+        html = Generator.generate_html_2(page or self.data)
         with open(f"./htmls/{filename}.html", "w") as file: file.write(html)
-        os.system("wkhtmltoimage --height 1080 --width 1920 --enable-local-file-access \
-                   ./htmls/{filename}.html ./images/{filename}.jpg")
+        error = os.system(f"wkhtmltoimage --enable-local-file-access ./htmls/{filename}.html ./images/{filename}.jpg")
+        if error:
+            print("Error while converting the HTML.")
 
 
-    def generate_multiple_images(self):
+    def generate_multiple_images(self, alarm):
         """
         Calls the `generate_image` func on each element of the data list.
         Does not allow to set a destination file.
         """
-        for i, page in enumerate(self.data):
-            filename = str(i).zfill(len(str(len(self.data))))
-            html = Generator.generate_html(page)
-            with open(f"./htmls/{filename}.html", "w") as file: file.write(html)
-            error = os.system("wkhtmltoimage --enable-local-file-access --quiet \
-                               ./htmls/{filename}.html ./images/{filename}.jpg")
-            if error:
-                print(f"Error for file {filename}.html => {filename}.jpg ({error})\n")
-            else:
-                print(f"\rRendered {i+1}/{len(self.data)} images.", end=" ")
+
+        # Creating N threads to generate data faster
+        threads = []
+        
+        cpu_count = psutil.cpu_count(logical=False)
+        reserved = 0
+        processed_count = [0]
+        for sublist in np.array_split(self.data, cpu_count):
+            threads.append(threading.Thread(target=self.image_generation_thread, args=(sublist, reserved, processed_count)))
+            reserved += len(sublist)
+
+        for thread in threads:
+            thread.start()
+
+        for thread in threads:
+            thread.join()
+
+        alarm[0] = True
 
         print()
 
 
-def has_collision(obj, elem_list):
-    for elem in elem_list:
-        dim = elem["coordinates"]["width"], elem["coordinates"]["height"]
-        pos = elem["coordinates"]["x"], elem["coordinates"]["y"]
+    def image_generation_thread(self, sublist, reserved, processed_count):
+        for i, page in enumerate(sublist):
+            filename = str(reserved + i).zfill(len(str(len(self.data))))
+            html = Generator.generate_html_2(page)
+            with open(f"./htmls/{filename}.html", "w") as file: file.write(html)
 
-        if (obj[0][0] < (pos[0] + dim[0]) and obj[1][0] > pos[0] and obj[0][1] < (pos[1] + dim[1]) and obj[1][1] > pos[1]):
+            error = os.system(f"wkhtmltoimage --enable-local-file-access --quiet ./htmls/{filename}.html ./images/{filename}.jpg")
+            if error:
+                print(f"Error for file {filename}.html => {filename}.jpg ({error})\n")
+            else:
+                processed_count[0] += 1
+                print(f"\rRendered {processed_count[0]}/{len(self.data)} images.", end=" ")
+
+
+
+
+def has_collision(objx, objy, objw, objh, elem_list):
+    for elem in elem_list:
+        width, height = elem["coordinates"]["width"], elem["coordinates"]["height"]
+        xpos, ypos = elem["coordinates"]["x"], elem["coordinates"]["y"]
+
+        if (objx < (xpos + width) and objy < (ypos + height) and (objx + objw) > xpos and (objy + objh) > ypos):
             return True
 
     return False
+
+
+def generate_random(elem_type, dimmin, dimmax, xmax, ymax):
+    """Narrowing results to desired shapes"""
+    width = random.randint(dimmin, dimmax)
+    height = random.randint(dimmin, dimmax)
+    posx = random.randint(0, xmax)
+    posy = random.randint(0, ymax)
+
+    if elem_type in ("select", "textbox"):
+        while not ((1 / 8) <= (height / width) <= (1/4)):
+            width = random.randint(150, 300)
+            height = random.randint(20, 75)
+
+    elif elem_type in ("checkbox", "radio"):
+        width, height = 20, 20
+
+    elif elem_type == "paragraph":
+        width, height = 120, 101
+
+    elif elem_type == "label":
+        width, height = 60, 24
+
+    elif elem_type == "link":
+        width, height = 52, 25
+
+    elif elem_type == "header":
+        width, height = 95, 47
+
+    else:
+        while (width / height) < 0.3 or (height / width) < 0.2:
+            width = random.randint(40, dimmax)
+            height = random.randint(20, dimmax)
+
+    return width, height, posx, posy
+
+
