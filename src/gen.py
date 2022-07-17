@@ -113,10 +113,10 @@ class Generator:
                 document += f"<input type='textbox' style='width:{width-3}px;height:{height-3}px'>"
 
             elif elem_type == "image":
-                document += f"<img src='{os.getcwd()}/src/cross.svg'style='transform-origin:top left;transform:scale({width}, {height-13})'>"
+                document += f"<img src='{os.getcwd()}/src/cross.svg'style='transform-origin:top left;transform:scale({width}, {height-15})'>"
 
             elif elem_type == "label":
-                document += f"<label style='font-size:{min(height, 0)}px'>Label</label>"
+                document += f"<label style='font-size:{min(height, 20)}px'>Label</label>"
 
             elif elem_type == "link":
                 document += f"<a href='http://127.0.0.1/' style='font-size:{min(height, 20)}px'>Link</a>"
@@ -182,12 +182,12 @@ class Generator:
 
                 for elem in page_data:
                     category_id = Generator.input_types.index(elem["type"])
-                    xpos = elem["coordinates"]["x"] / img.width
-                    ypos = elem["coordinates"]["y"] / img.height
                     width = elem["coordinates"]["width"] / img.width
                     height = elem["coordinates"]["height"] / img.height
+                    center_x = (elem["coordinates"]["x"] + (elem["coordinates"]["width"] / 2)) / img.width
+                    center_y = (elem["coordinates"]["y"] + (elem["coordinates"]["height"] / 2)) / img.height
 
-                    file.write(f"{category_id} {xpos} {ypos} {width} {height}\n")
+                    file.write(f"{category_id} {center_x} {center_y} {width} {height}\n")
 
             print(f"\rGenerated {i+1}/{len(self.data)} labels.", end=" ")
 
@@ -289,7 +289,7 @@ def generate_random(elem_type, dimmin, dimmax, xmax, ymax):
         width, height = 20, 20
 
     elif elem_type == "paragraph":
-        width, height = 120, 101
+        width, height = 120, 105
 
     elif elem_type == "label":
         width, height = 60, 24
