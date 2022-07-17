@@ -10,7 +10,7 @@ from PIL import Image
 
 
 class Generator:
-    input_types = [  #  number    index
+    input_types = [     # number    index
         "button",       # 0         0  
         # "carousel",     # 1   
         "checkbox",     # 2         1
@@ -189,6 +189,8 @@ class Generator:
 
                     file.write(f"{category_id} {xpos} {ypos} {width} {height}\n")
 
+            print(f"\rGenerated {i+1}/{len(self.data)} labels.", end=" ")
+
 
     @staticmethod
     def generate_dataset(size):
@@ -204,6 +206,8 @@ class Generator:
 
         app.generate_labels()
 
+        print("\n\nDone.")
+
 
     def generate_image(self, page=None, dest=None):
         filename = dest or self.dest
@@ -214,7 +218,7 @@ class Generator:
             print("Error while converting the HTML.")
 
 
-    def generate_multiple_images(self, alarm):
+    def generate_multiple_images(self, done=[False]):
         """
         Calls the `generate_image` func on each element of the data list.
         Does not allow to set a destination file.
@@ -223,7 +227,8 @@ class Generator:
         # Creating N threads to generate data faster
         threads = []
         
-        cpu_count = psutil.cpu_count(logical=False)
+        # cpu_count = psutil.cpu_count(logical=False)
+        cpu_count = 32
         reserved = 0
         processed_count = [0]
         for sublist in np.array_split(self.data, cpu_count):
@@ -236,7 +241,7 @@ class Generator:
         for thread in threads:
             thread.join()
 
-        alarm[0] = True
+        done[0] = True
 
         print()
 

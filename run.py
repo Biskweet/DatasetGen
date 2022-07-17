@@ -9,7 +9,7 @@ if __name__ == "__main__":
         if not os.path.isdir(directory):
             os.mkdir(directory)
 
-    if len(sys.argv) < 2 or sys.argv[1] not in ("generate-dataset", "generate-json", "single", "multiple", "clearall"):
+    if len(sys.argv) < 2 or sys.argv[1] not in ("generate-dataset", "generate-json", "single", "multiple", "clean"):
         raise SystemExit("Please select a valid command.")
 
     # Random generation
@@ -32,7 +32,7 @@ if __name__ == "__main__":
             app = Generator(sys.argv)
             app.generate_multiple_images()
 
-        elif sys.argv[1] == "clearall":
+        elif sys.argv[1] == "clean":
             try:
                 shutil.rmtree("./jsons/")
                 shutil.rmtree("./htmls/")
