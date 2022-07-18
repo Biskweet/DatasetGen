@@ -33,6 +33,7 @@ class Generator:
                   data file for the generation (and optionally one destination file).")
             raise SystemExit("Aborting.")
 
+
         # Single file generation
         if (args[1] == "single"):
             try:
@@ -172,26 +173,6 @@ class Generator:
         print()
 
 
-    def generate_labels(self):
-        for i, page in enumerate(self.data):
-            page_data = page["data"]
-            filename = str(i).zfill(len(str(len(self.data))))
-
-            with open(f"./labels/{filename}.txt", "w") as file:
-                img = Image.open(f"./images/{filename}.jpg")
-
-                for elem in page_data:
-                    category_id = Generator.input_types.index(elem["type"])
-                    width = elem["coordinates"]["width"] / img.width
-                    height = elem["coordinates"]["height"] / img.height
-                    center_x = (elem["coordinates"]["x"] + (elem["coordinates"]["width"] / 2)) / img.width
-                    center_y = (elem["coordinates"]["y"] + (elem["coordinates"]["height"] / 2)) / img.height
-
-                    file.write(f"{category_id} {center_x} {center_y} {width} {height}\n")
-
-            print(f"\rGenerated {i+1}/{len(self.data)} labels.", end=" ")
-
-
     @staticmethod
     def generate_dataset(size):
         Generator.generate_json(size)
@@ -207,6 +188,29 @@ class Generator:
         app.generate_labels()
 
         print("\n\nDone.")
+
+
+    def generate_labels(self):
+        for i, page in enumerate(self.data):
+            page_data = page["data"]
+            filename = str(i).zfill(len(str(len(self.data))))
+
+            with open(f"./labels/{filename}.txt", "w") as file:
+                img = Image.open(f"./images/{filename}.jpg")
+
+                for elem in page_data:
+                    category_id = Generator.input_types.index(elem["type"])
+                    width = elem["coordinates"]["width"] / img.width
+                    height = elem["coordinates"]["height"] / img.height
+                    center_x = (elem["coordinates"]["x"] + (elem["coordinates"]["width"] / 2)) / img.width
+                    center_y = (elem["coordinates"]["y"] + (elem["coordinates"]["height"] / 2)) / img.height
+
+                    center_x = min(1, center_x)
+                    center_y = min(1, center_y)
+
+                    file.write(f"{category_id} {center_x} {center_y} {width} {height}\n")
+
+            print(f"\rGenerated {i+1}/{len(self.data)} labels.", end=" ")
 
 
     def generate_image(self, page=None, dest=None):

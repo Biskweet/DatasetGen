@@ -41,6 +41,3 @@ with open(label, "r") as file:
 print("Image number:", filename)
 
 plot_bounding_box(image, description)
-
-
-
