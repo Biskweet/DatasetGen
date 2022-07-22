@@ -1,7 +1,6 @@
 import json
 import os
 from time import time
-import psutil
 import random
 import subprocess
 import threading
@@ -151,7 +150,7 @@ class Generator:
             for _ in range(nbelem):
                 # Generating valid, non-overlapping dimensions for each element
                 elem_type = random.choice(Generator.input_types)
-                
+
                 # Generating base random data
                 width, height, posx, posy = generate_random(elem_type, dimmin, dimmax, xmax, ymax)
 
