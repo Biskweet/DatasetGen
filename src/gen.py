@@ -189,8 +189,7 @@ class Generator:
 
             for _ in range(nbelem):
                 # Generating valid, non-overlapping dimensions for each element
-                # elem_type = random.choice(Generator.input_types)
-                elem_type = "select"
+                elem_type = random.choice(Generator.input_types)
 
                 # Generating base random data
                 width, height, posx, posy = utils.generate_random(elem_type, dimmin, dimmax, xmax, ymax)
