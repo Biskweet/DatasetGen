@@ -28,8 +28,9 @@ def plot_bounding_box(image, annotation_list):
     plt.imshow(np.array(image))
     plt.show()
 
-
-filename = random.choice(os.listdir("images/"))
+filename = input("Filename: ")
+if not filename:
+    filename = random.choice(os.listdir("images/"))
 image = Image.open("images/" + filename)
 label = "labels/" + filename.replace("jpg", "txt")
 

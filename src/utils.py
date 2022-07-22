@@ -2,32 +2,42 @@ import random
 
 
 WORDS = [
-    'dolorem',    'natus',         'consequatur', 'modi',
-    'ea',         'aut',           'nesciunt',    'dolore',
-    'eum',        'dicta',         'veniam',      'iure',
-    'totam',      'nisi',          'laudantium',  'nulla',
-    'ipsum',      'corporis',      'omnis',       'ratione',
-    'dolores',    'perspiciatis',  'ipsa',        'velit',
-    'quae',       'reprehenderit', 'et',          'aperiam',
-    'commodi',    'sequi',         'quasi',       'sed',
-    'magni',      'consequuntur',  'sunt',        'fugit',
-    'ut',         'illum',         'accusantium', 'ad',
-    'architecto', 'error',         'pariatur',    'in',
-    'nostrum',    'doloremque',    'aliquid',     'laboriosam',
-    'magnam',     'est',           'tempora',     'consectetur',
-    'vitae',      'incidunt',      'quam',        'aliquam',
-    'ex',         'aspernatur',    'voluptatem',  'voluptate',
-    'porro',      'beatae',        'explicabo',   'exercitationem',
-    'eius',       'quia',          'eos',         'suscipit',
-    'nemo',       'qui',           'quis',        'quaerat',
-    'fugiat',     'minima',        'inventore',   'amet',
-    'labore',     'illo',          'unde',        'esse',
-    'eaque',      'molestiae',     'quisquam',    'vel',
-    'ullam',      'non',           'ab',          'numquam',
-    'dolor',      'odit',          'voluptas',    'enim',
-    'veritatis',  'iste',          'adipisci',    'autem',
-    'quo',        'ipsam',         'sit',         'rem',
-    'nihil',      'neque'
+    "dolorem",    "natus",         "consequatur", "modi",
+    "ea",         "aut",           "nesciunt",    "dolore",
+    "eum",        "dicta",         "veniam",      "iure",
+    "totam",      "nisi",          "laudantium",  "nulla",
+    "ipsum",      "corporis",      "omnis",       "ratione",
+    "dolores",    "perspiciatis",  "ipsa",        "velit",
+    "quae",       "reprehenderit", "et",          "aperiam",
+    "commodi",    "sequi",         "quasi",       "sed",
+    "magni",      "consequuntur",  "sunt",        "fugit",
+    "ut",         "illum",         "accusantium", "ad",
+    "architecto", "error",         "pariatur",    "in",
+    "nostrum",    "doloremque",    "aliquid",     "laboriosam",
+    "magnam",     "est",           "tempora",     "consectetur",
+    "vitae",      "incidunt",      "quam",        "aliquam",
+    "ex",         "aspernatur",    "voluptatem",  "voluptate",
+    "porro",      "beatae",        "explicabo",   "exercitationem",
+    "eius",       "quia",          "eos",         "suscipit",
+    "nemo",       "qui",           "quis",        "quaerat",
+    "fugiat",     "minima",        "inventore",   "amet",
+    "labore",     "illo",          "unde",        "esse",
+    "eaque",      "molestiae",     "quisquam",    "vel",
+    "ullam",      "non",           "ab",          "numquam",
+    "dolor",      "odit",          "voluptas",    "enim",
+    "veritatis",  "iste",          "adipisci",    "autem",
+    "quo",        "ipsam",         "sit",         "rem",
+    "nihil",      "neque"
+]
+
+
+FONTS = [
+    "Letters for learners",     # Handwriting
+    "Libre Baskerville",        # Serif
+    "Kalam",                    # Handwriting
+    "Kausham",                  # Serif
+    "Roboto",                   # Sans serif
+    ""                          # Default serif font
 ]
 
 
@@ -64,7 +74,7 @@ def generate_random(elem_type, dimmin, dimmax, xmax, ymax):
         width, height = 52, 25
 
     elif elem_type == "header":
-        width, height = 95, 47
+        width, height = 125, 60
 
     elif elem_type == "paragraph":
         while (width / height) < 0.6 or (height / width) < 0.2:

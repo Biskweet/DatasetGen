@@ -80,8 +80,42 @@ class Generator:
                 print("Package wkhtmltoimage is not installed!")
                 raise SystemExit("Aborting.")
 
+        # Defining the CWD to avoid calling it multiple times later
+        cwd = os.getcwd()
+
         # Beginning webpage
-        document = "<!DOCTYPE html><head></head><body style='body{font-family:monospace;padding:0;margin:0;border:0}'>"
+        document = """
+        <!DOCTYPE html>
+        <head>
+            <style>
+                @font-face {
+                    font-family: 'Libre Baskerville';
+                    src: url('/home/gaspard/Documents/Prog/html-dataset-generation/tests/fonts/Libre_Baskerville.ttf');
+                }
+                @font-face {
+                    font-family: Kalam;
+                    src: url('/home/gaspard/Documents/Prog/html-dataset-generation/tests/fonts/Kalam.ttf');
+                }
+                @font-face {
+                    font-family: Kaushan;
+                    src: url('/home/gaspard/Documents/Prog/html-dataset-generation/tests/fonts/Kaushan.ttf');
+                }
+                @font-face {
+                    font-family: 'Letters for learners';
+                    src: url('/home/gaspard/Documents/Prog/html-dataset-generation/tests/fonts/Letters_for_learners.ttf');
+                }
+                @font-face {
+                    font-family: Roboto;
+                    src: url('/home/gaspard/Documents/Prog/html-dataset-generation/tests/fonts/Roboto.ttf');
+                }
+                body{
+                    padding: 0;
+                    margin: 0;
+                    border: 0;
+                }
+            </style>
+        </head>
+        <body>"""
 
         for element in data:
             elem_type = element.get("type")
@@ -102,6 +136,10 @@ class Generator:
                 element["coordinates"]["width"]    # y-pos
             )
 
+            font = ''
+            if elem_type in ("label", "link", "paragraph", "button", "header", "select"):
+                font = random.choice(utils.FONTS)
+
             # We start filling the document from there
             document += f"<div style='position:absolute;left:{coord[0]}px;top:{coord[1]}px'>"
 
@@ -109,31 +147,31 @@ class Generator:
                 document += f"<input type='{elem_type}' style='width:{width};height:{height}'>"
 
             elif elem_type == "button":
-                document += f"<input type='button' style='width:{width}px;height:{height}px' value='Button'>"
+                document += f"<input type='button' style='width:{width}px;height:{height}px;font-family:{font}' value='{content}'>"
 
             elif elem_type == "textbox":
                 document += f"<input type='textbox' style='width:{width-3}px;height:{height-3}px'>"
 
             elif elem_type == "image":
-                document += f"<img src='{os.getcwd()}/src/cross.svg'style='transform-origin:top left;transform:scale({width}, {height-15})'>"
+                document += f"<img src='{cwd}/src/cross.svg'style='transform-origin:top left;transform:scale({width}, {height-15})'>"
 
             elif elem_type == "label":
-                document += f"<label style='font-size:{min(height, 20)}px'>Label</label>"
+                document += f"<label style='font-size:{min(height, 20)}px;font-family:{font}'>Label</label>"
 
             elif elem_type == "link":
-                document += f"<a href='http://127.0.0.1/' style='font-size:{min(height, 20)}px'>Link</a>"
+                document += f"<a href style='font-size:{min(height, 20)}px;font-family:{font}'>Link</a>"
 
             elif elem_type == "header":
-                document += f"<h1 style='font-family:monospace'>Header</h1>"
+                document += f"<h1 style='font-family:{font}'>Header</h1>"
 
             elif elem_type == "paragraph":
-                document += f"<textarea style='width:{width}px;height:{height}px;border:none;resize:none;overflow:hidden'>{content}</textarea>"
+                document += f"<textarea style='width:{width}px;height:{height}px;border:none;resize:none;overflow:hidden;font-family:{font}'>{content}</textarea>"
 
             elif elem_type == "textarea":
                 document += f"<textarea style='width:{width-5}px;height:{height-5}px;overflow:scroll'></textarea>"
 
             elif elem_type == "select":
-                document += f"<select style='width:{width}px;height:{height}px'><option>Select</option></select>"
+                document += f"<select style='width:{width}px;height:{height}px;font-family:{font}'><option>Select</option></select>"
 
             document += "</div>"
 
@@ -151,7 +189,8 @@ class Generator:
 
             for _ in range(nbelem):
                 # Generating valid, non-overlapping dimensions for each element
-                elem_type = random.choice(Generator.input_types)
+                # elem_type = random.choice(Generator.input_types)
+                elem_type = "select"
 
                 # Generating base random data
                 width, height, posx, posy = utils.generate_random(elem_type, dimmin, dimmax, xmax, ymax)
@@ -161,8 +200,8 @@ class Generator:
 
                 if elem_type == "paragraph":
                     content = utils.generate_text_content()
-                # elif elem_type == "label":
-                #     content = generate_text_content(length=math.random(1, 3))
+                elif elem_type == "button":
+                    content = utils.generate_text_content(length=random.randint(1, 3))
                 else:
                     content = "content"
 
