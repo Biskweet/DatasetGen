@@ -7,6 +7,8 @@ import threading
 import numpy as np
 from PIL import Image
 
+from . import utils
+
 
 class Generator:
     input_types = [     # number    index
@@ -83,7 +85,7 @@ class Generator:
 
         for element in data:
             elem_type = element.get("type")
-            # content = element.get("content")
+            content = element.get("content")
             # name = element.get(   "name")
             # value = element.get("value")
 
@@ -125,7 +127,7 @@ class Generator:
                 document += f"<h1 style='font-family:monospace'>Header</h1>"
 
             elif elem_type == "paragraph":
-                document += f"<p style='width:{width}px;height:{height}px'>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>"
+                document += f"<textarea style='width:{width}px;height:{height}px;border:none;resize:none;overflow:hidden'>{content}</textarea>"
 
             elif elem_type == "textarea":
                 document += f"<textarea style='width:{width-5}px;height:{height-5}px;overflow:scroll'></textarea>"
@@ -152,17 +154,24 @@ class Generator:
                 elem_type = random.choice(Generator.input_types)
 
                 # Generating base random data
-                width, height, posx, posy = generate_random(elem_type, dimmin, dimmax, xmax, ymax)
+                width, height, posx, posy = utils.generate_random(elem_type, dimmin, dimmax, xmax, ymax)
 
-                while has_collision(posx, posy, width, height, elements["data"]):
-                    width, height, posx, posy = generate_random(elem_type, dimmin, dimmax, xmax, ymax)
+                while utils.has_collision(posx, posy, width, height, elements["data"]):
+                    width, height, posx, posy = utils.generate_random(elem_type, dimmin, dimmax, xmax, ymax)
+
+                if elem_type == "paragraph":
+                    content = utils.generate_text_content()
+                # elif elem_type == "label":
+                #     content = generate_text_content(length=math.random(1, 3))
+                else:
+                    content = "content"
 
 
                 elements["data"].append({
                     "type": elem_type,
                     "value": "value",
                     "name": "name",
-                    "content": "content",
+                    "content": content,
                     "coordinates": {"x": posx, "y": posy, "width": width, "height": height}
                 })
 
@@ -261,53 +270,3 @@ class Generator:
             else:
                 processed_count[0] += 1
                 print(f"\rRendered {processed_count[0]}/{len(self.data)} images.", end=" ")
-
-
-
-
-def has_collision(objx, objy, objw, objh, elem_list):
-    for elem in elem_list:
-        width, height = elem["coordinates"]["width"], elem["coordinates"]["height"]
-        xpos, ypos = elem["coordinates"]["x"], elem["coordinates"]["y"]
-
-        if (objx < (xpos + width) and objy < (ypos + height) and (objx + objw) > xpos and (objy + objh) > ypos):
-            return True
-
-    return False
-
-
-def generate_random(elem_type, dimmin, dimmax, xmax, ymax):
-    """Narrowing results to desired shapes"""
-    width = random.randint(dimmin, dimmax)
-    height = random.randint(dimmin, dimmax)
-    posx = random.randint(0, xmax)
-    posy = random.randint(0, ymax)
-
-    if elem_type in ("select", "textbox"):
-        while not ((1 / 8) <= (height / width) <= (1/4)):
-            width = random.randint(150, 300)
-            height = random.randint(20, 75)
-
-    elif elem_type in ("checkbox", "radio"):
-        width, height = 20, 20
-
-    elif elem_type == "paragraph":
-        width, height = 120, 105
-
-    elif elem_type == "label":
-        width, height = 60, 24
-
-    elif elem_type == "link":
-        width, height = 52, 25
-
-    elif elem_type == "header":
-        width, height = 95, 47
-
-    else:
-        while (width / height) < 0.3 or (height / width) < 0.2:
-            width = random.randint(40, dimmax)
-            height = random.randint(20, dimmax)
-
-    return width, height, posx, posy
-
-
