@@ -163,5 +163,5 @@ cython_debug/
 *.json
 *.html
 *.pyc
-rapport.md
-labels/*
+htm-version/rapport.md
+html-version/labels/*
