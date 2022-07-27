@@ -159,9 +159,13 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
-*.jpg
+
 *.json
 *.html
 *.pyc
-htm-version/rapport.md
-html-version/labels/*
+*.txt
+html-version/rapport.md
+html-version/images/
+opencv-version/images/
+
+
