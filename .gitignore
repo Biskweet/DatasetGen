@@ -163,10 +163,9 @@ cython_debug/
 *.json
 *.html
 *.pyc
+*.txt
 html-version/rapport.md
 html-version/images/
-html-version/labels/
 opencv-version/images/
-opencv-version/labels
 
 
