@@ -1,0 +1,6 @@
+train: ../datasets/images/train/
+val:  ../datasets/images/val/
+
+# number of classes
+nc: 10
+names: ['button', 'checkbox', 'image', 'label', 'link', 'paragraph', 'radio', 'select', 'textarea', 'textbox']
