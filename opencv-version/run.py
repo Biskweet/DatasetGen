@@ -1,53 +1,28 @@
 import sys
 import shutil
-import time
 import os
 from src.gen import Generator
 
-if __name__ == "__main__":
-    # Creating necessary directories
-    for directory in ("./jsons/", "./images/", "./labels/"):
-        if not os.path.isdir(directory):
-            os.mkdir(directory)
 
-    if len(sys.argv) < 2 or sys.argv[1] not in ("dataset", "json", "singlehtml", "multiplehtml", "clean"):
+if __name__ == "__main__":
+    if len(sys.argv) < 2 or sys.argv[1] not in ("dataset", "clean"):
         raise SystemExit("Please select a valid command.")
 
-    # Random generation
-    if len(sys.argv) > 2 and sys.argv[2].isdigit():
-        # Complete A to Z dataset 
-        if sys.argv[1] == "dataset":
+    # Generating dataset of size N = `sys.argv[2]`
+    if len(sys.argv) > 2 and sys.argv[1] == "dataset" and sys.argv[2].isdigit():
+        os.system("python run.py clean")  # Cleaning
 
-            os.system("python run.py clean")  # Cleaning
+        # Creating necessary directories
+        for directory in ("./jsons/", "./images/", "./labels/"):
+            if not os.path.isdir(directory):
+                os.mkdir(directory)
 
-            # Creating necessary directories
-            for directory in ("./jsons/", "./images/", "./labels/"):
-                if not os.path.isdir(directory):
-                    os.mkdir(directory)
+        size = int(sys.argv[2])
+        Generator.generate_dataset(size)
 
-            Generator.generate_dataset(int(sys.argv[2]))
 
-        # JSON only
-        if sys.argv[1] == "json":
-            Generator.generate_json(int(sys.argv[2]))
-
-    else:
-        # HTML to JPG generation
-        if sys.argv[1] == "singlehtml":
-            app = Generator(sys.argv)
-            # app.generate_image()
-
-        elif sys.argv[1] == "multiplehtml":
-            app = Generator(sys.argv)
-            app.generate_multiple_images()
-
-        elif sys.argv[1] == "clean":
+    elif sys.argv[1] == "clean":
+        for folder in ("./jsons/", "./images/", "./labels/", "./src/__pycache__/"):
             try:
-                shutil.rmtree("./jsons/")
-                shutil.rmtree("./images/")
-                shutil.rmtree("./labels/")
-                shutil.rmtree("./src/__pycache__/")
-            except Exception: ...
-
-        else:
-            print("Please provide arguments.")
+                shutil.rmtree(folder)
+            except Exception: ...  # Ignoring `rm` errors (i.e. non-existing directory)

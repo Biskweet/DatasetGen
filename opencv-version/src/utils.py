@@ -1,6 +1,11 @@
 import random
 
 
+TRAIN_RATIO =  0.75
+VAL_RATIO = 0.20
+TEST_RATIO = 0.05
+
+
 WORDS = [
     "dolorem",    "natus",         "consequatur", "modi",
     "ea",         "aut",           "nesciunt",    "dolore",
