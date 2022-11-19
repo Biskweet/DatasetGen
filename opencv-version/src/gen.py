@@ -174,18 +174,11 @@ class Generator:
         for i in range(no_of_threads):
             chunk_size = len(self.data) // no_of_threads + (i >= (no_of_threads - len(self.data) % no_of_threads))
 
-            # print("chunk =", assigned, "+", chunk_size)
-
             threads.append(
                 threading.Thread(target=image_generation_thread, args=(assigned, chunk_size))
             )
 
             assigned += chunk_size
-
-
-        # for sublist in np.array_split(self.data, no_of_threads):
-        #     threads.append(threading.Thread(target=self.image_generation_thread, args=(sublist, assigned, processed_count)))
-        #     assigned += len(sublist)
 
         # Starting all threads
         for thread in threads:
