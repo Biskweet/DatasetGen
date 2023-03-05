@@ -32,6 +32,6 @@ Image (any common format).
 See a list of allowed input types in [Mozilla's docs](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input).
 
 ## Method
-We will generate HTML files from the JSON data and then render the webpage to an image.
-This readme is subject to change.
+We will generate HTML files using the automatically created JSON data, and then render each HTML file to a JPG image.
+This readme is subject to change!
 
