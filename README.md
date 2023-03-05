@@ -1,6 +1,6 @@
 # JSON description of an HTML webpage and image generation
 
-The project aims to generate image representations from JSON descriptions of a webpages's input elements.
+The project aims to generate image representations from JSON descriptions of a webpages's input elements. The JSON files are automatically created and used by the generator (which is just a renderer).
 
 ## Requirements
 * The [WKHTMLtoPDF](https://wkhtmltopdf.org/) Linux package
@@ -8,7 +8,7 @@ The project aims to generate image representations from JSON descriptions of a w
 * A recent Python installation
 
 
-## Input template:
+## Input template generated:
 ```json
 "data": [
     {
